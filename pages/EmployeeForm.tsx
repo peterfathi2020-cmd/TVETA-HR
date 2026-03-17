@@ -8,7 +8,7 @@ import {
   Employee, EmployeeType, EmployeeTypeLabels, WorkUnit, UserRole, 
   Nationality, NationalityLabels, Religion, ReligionLabels, MaritalStatus, MaritalStatusLabels, WorkUnitType, WorkUnitTypeLabels, EmployeeDocument, TrainingRecord, Qualification 
 } from '../types';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { EGYPT_GOVERNORATES } from '../constants';
 
 const COMMON_JOB_TITLES = ['معلم', 'إداري', 'مدرب', 'مدير مدرسة', 'رئيس قسم', 'أخصائي تكنولوجيا'];

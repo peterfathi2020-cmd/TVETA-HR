@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { Employee, WorkUnit, UserRole, EmployeeType, EmployeeTypeLabels } from '../types';
 import { getEmployeeDetails, getAllWorkUnits, getManagedUnit, getEmployeeNameById, updateEmployee, addEmployee } from '../services/authService';
 import { WorkUnitService, EmployeeService, SeedService, AuditLogService } from '../services/api';

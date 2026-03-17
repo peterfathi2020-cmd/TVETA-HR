@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { EmployeeService, WorkUnitService, DatabaseService, SeedService } from '../services/api';
 import { getManagedUnit } from '../services/authService';
 import { 

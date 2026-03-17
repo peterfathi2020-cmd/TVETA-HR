@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { UserRole, Employee, WorkUnit } from '../types';
 
 export const usePermissions = () => {

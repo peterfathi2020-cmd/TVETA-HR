@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { EmployeeService, PromotionService, AppraisalService } from '../services/api';
 import { Employee, Appraisal, TrainingRecord } from '../types';
 import { Layout } from '../components/Layout';

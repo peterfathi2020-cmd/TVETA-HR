@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Building2, Lock, Mail, User, AlertCircle, CheckCircle, FileText, Hash } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { AuthService, validateAcademicEmail } from '../services/api';
 import { ACADEMY_LOGO_URL } from '../constants';
 
