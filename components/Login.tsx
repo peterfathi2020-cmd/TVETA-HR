@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Building2, Lock, Mail, AlertCircle, ShieldCheck, ArrowRight, UserSquare, Shield, Users, UserCog } from 'lucide-react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import { AuthService, validateAcademicEmail } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 

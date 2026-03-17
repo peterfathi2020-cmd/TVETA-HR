@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, UserPlus, Building2, Menu, X, LogOut, User as UserIcon, FileText, ChevronLeft, Sun, Moon, Shield, Briefcase, GraduationCap, School, Sparkles } from 'lucide-react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { UserRole } from '../types';
 import { ACADEMY_LOGO_URL } from '../constants';

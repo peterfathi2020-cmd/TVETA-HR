@@ -13,7 +13,7 @@ import {
   Employee, EmployeeType, EmployeeTypeLabels, WorkUnit, 
   NationalityLabels, ReligionLabels, MaritalStatusLabels, EducationTypeLabels, UserRole 
 } from '../types';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import { getManagedUnit } from '../services/authService';
 import { ACADEMY_LOGO_URL } from '../constants';
 

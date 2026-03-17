@@ -2,7 +2,7 @@
 import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './context/authContext';
+import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { RoleProtectedRoute } from './hooks/RoleProtectedRoute';
 import { Loader2 } from 'lucide-react';
