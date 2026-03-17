@@ -1,0 +1,81 @@
+{
+  "entities": {
+    "Employee": {
+      "title": "Employee",
+      "description": "Internal employee record",
+      "type": "object",
+      "properties": {
+        "national_id": { "type": "string" },
+        "full_name_ar": { "type": "string" },
+        "email": { "type": "string" },
+        "academic_email": { "type": "string" },
+        "role": { "type": "string" },
+        "job_title": { "type": "string" },
+        "birth_date": { "type": "string" },
+        "phone_number": { "type": "string" },
+        "employment_date": { "type": "string" },
+        "work_place_id": { "type": "number" },
+        "employee_type": { "type": "string" }
+      },
+      "required": ["national_id", "full_name_ar", "email", "role"]
+    },
+    "WorkUnit": {
+      "title": "WorkUnit",
+      "description": "Educational unit (School, Dept, etc.)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "governorate": { "type": "string" },
+        "manager_id": { "type": "string" }
+      },
+      "required": ["id", "name", "type", "governorate"]
+    },
+    "User": {
+      "title": "User",
+      "description": "System user profile for RBAC",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "national_id": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System audit log for tracking changes",
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "entityType": { "type": "string" },
+        "entityId": { "type": "string" }
+      },
+      "required": ["timestamp", "userId", "action", "entityType", "entityId"]
+    },
+    "Appraisal": {
+      "title": "Appraisal",
+      "description": "Employee performance appraisal",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string" },
+        "managerId": { "type": "string" },
+        "year": { "type": "number" },
+        "rating": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["employeeId", "managerId", "year", "rating", "status"]
+    }
+  },
+  "firestore": {
+    "/employees": { "schema": "Employee", "description": "Collection of all employees" },
+    "/work_units": { "schema": "WorkUnit", "description": "Collection of all work units" },
+    "/users": { "schema": "User", "description": "Collection of system users for RBAC" },
+    "/audit_logs": { "schema": "AuditLog", "description": "System audit logs" },
+    "/appraisals": { "schema": "Appraisal", "description": "Employee appraisals" }
+  }
+}

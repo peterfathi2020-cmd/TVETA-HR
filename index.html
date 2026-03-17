@@ -4,110 +4,196 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4f46e5" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>TVETA - نظام بيانات العاملين</title>
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/Gtdn21c4/123456.jpg" />
+    
+    <!-- Performance Optimization: Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+    <link rel="icon" type="image/png" href="/logo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
-        darkMode: 'class', // This is crucial for the toggle to work
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
               brand: {
-                50: '#eff6ff',
-                100: '#dbeafe',
-                200: '#bfdbfe',
-                300: '#93c5fd',
-                400: '#60a5fa',
-                500: '#3b82f6',
-                600: '#2563eb',
-                700: '#1d4ed8',
-                800: '#1e40af',
-                900: '#1e3a8a',
+                50: '#f0f4f8',
+                100: '#d9e2ec',
+                200: '#bcccdc',
+                300: '#9fb3c8',
+                400: '#829ab1',
+                500: '#627d98',  // Slate Blue
+                600: '#486581',
+                700: '#334e68',
+                800: '#243b53',  // Dark Royal
+                900: '#102a43',  // Deep Navy (Academic Header)
+                gold: '#f0b429', // Academic Gold/Yellow for accents
+              },
+              academic: {
+                primary: '#003366', // Official Ministry Blue
+                secondary: '#c5a059', // Gold/Bronze
+                accent: '#8d191c'     // Official Red (Stamps/Alerts)
               }
             },
             fontFamily: {
               sans: ['Cairo', 'sans-serif'],
+              serif: ['Times New Roman', 'serif'], // For Print
+            },
+            boxShadow: {
+              'academic': '0 4px 6px -1px rgba(0, 51, 102, 0.1), 0 2px 4px -1px rgba(0, 51, 102, 0.06)',
             }
           }
         }
       }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       body {
         font-family: 'Cairo', sans-serif;
-        /* Default background handled by Tailwind classes in App/Layout, 
-           but we set a base here to prevent flash */
+        background-color: #f8fafc; /* Very light slate background */
       }
+      
+      /* Base Responsive Image Style */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* Professional Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+
       @media print {
         @page {
-          size: auto;
-          margin: 10mm;
+          size: A4 portrait;
+          margin: 10mm; /* Adjusted margins for standard A4 printing */
         }
-        html, body {
+        
+        /* Force Light Mode Global Overrides for A4 */
+        html, body, #root {
           height: auto !important;
           overflow: visible !important;
-          background-color: white !important;
-          color: black !important;
-        }
-        body {
+          background-color: #ffffff !important;
+          color: #000000 !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
-          position: relative;
+          font-family: 'Times New Roman', serif !important; /* Official Font */
+        }
+
+        /* Override Dark Mode Backgrounds specifically */
+        .dark, [class*="dark:"] {
+            background-color: transparent !important;
+            color: black !important;
+            border-color: #000 !important;
         }
         
-        /* Watermark Configuration */
-        body::after {
-          content: "";
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 80%;
-          height: 80%;
-          background-image: url('https://i.postimg.cc/Gtdn21c4/123456.jpg');
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: 500px auto; /* Adjust size as needed */
-          opacity: 0.08 !important; /* Very light opacity */
-          z-index: -1000;
-          pointer-events: none;
+        /* Force white backgrounds on cards */
+        .bg-white, .dark\:bg-slate-800, .bg-slate-50, .bg-slate-900, .bg-brand-900 {
+            background-color: #ffffff !important;
+        }
+        
+        /* Ensure text is black */
+        .text-white, .text-slate-200, .text-gray-200, .dark\:text-white {
+            color: #000000 !important;
         }
 
-        /* Disable animations during print to ensure content visibility */
+        /* Hide UI elements */
+        .no-print, nav, aside, button, .shadow-academic, header {
+          display: none !important;
+        }
+
+        /* Force all elements to white background and black text */
         *, *::before, *::after {
-          animation: none !important;
-          transition: none !important;
+          box-shadow: none !important;
+          text-shadow: none !important;
         }
 
-        /* Ensure opacity is 1 for content, but allow watermark to be transparent */
-        *:not(body):not(body::after) {
-             opacity: 1 !important;
+        /* Specific Table Styling for Print */
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            border: 1px solid #000 !important; /* Thinner border for cleaner print */
+            font-size: 11pt !important;
+        }
+        th, td {
+            border: 1px solid #000 !important;
+            padding: 4px 8px !important;
+            color: black !important;
+        }
+        
+        /* Headers specific overrides */
+        .print-header-bg {
+            background-color: #e5e7eb !important; /* Light Gray for print headers */
+            font-weight: bold !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        /* Ensure logos print clearly and consistently */
+        img {
+            filter: none !important; 
+            opacity: 1 !important;
+            page-break-inside: avoid !important;
+            max-width: 100% !important;
+            height: auto !important;
         }
 
-        /* Ensure specific containers don't cut off content */
+        /* Table header/footer repetition on new pages */
+        thead {
+            display: table-header-group;
+        }
+        tfoot {
+            display: table-footer-group;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
+
+        /* Ensure links don't show URLs */
+        a[href]:after {
+            content: none !important;
+        }
+
         #root {
-          height: auto !important;
-          overflow: visible !important;
           position: relative;
           z-index: 1;
-        }
-        
-        /* Hide Dark Mode elements in print */
-        .dark {
-           color-scheme: light;
         }
       }
     </style>
   <script type="importmap">
 {
   "imports": {
+    "react/jsx-runtime": "https://aistudiocdn.com/react@^19.2.0/jsx-runtime",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@6.28.0",
     "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
     "xlsx": "https://aistudiocdn.com/xlsx@^0.18.5",
     "path": "https://aistudiocdn.com/path@^0.12.7",
@@ -115,14 +201,38 @@
     "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.2",
     "url": "https://aistudiocdn.com/url@^0.11.4",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
-    "firebase/": "https://esm.sh/firebase@^12.7.0/"
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js",
+    "firebase/storage": "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js",
+    "firebase/analytics": "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js",
+    "leaflet": "https://esm.sh/leaflet@1.9.4",
+    "firebase/": "https://esm.sh/firebase@^10.14.1/"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-gray-50 text-gray-900 dark:bg-slate-900 dark:text-white transition-colors duration-300">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading Splash Screen -->
+      <div class="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-900 transition-colors p-4">
+        <div class="mb-6 p-6 bg-white rounded-full shadow-2xl border border-gray-100 flex items-center justify-center">
+            <img 
+              src="/logo.png" 
+              alt="شعار الأكاديمية المهنية للمعلمين - وزارة التربية والتعليم" 
+              class="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain animate-pulse drop-shadow-sm max-w-full h-auto" 
+            />
+        </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-[#003366] dark:text-white mb-3 tracking-wide text-center drop-shadow-sm font-sans">الأكاديمية المهنية للمعلمين</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-lg font-medium mb-8">نظام إدارة بيانات الكادر</p>
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-3 bg-[#c5a059] rounded-full animate-bounce delay-75"></div>
+          <div class="w-3 h-3 bg-[#003366] rounded-full animate-bounce delay-150"></div>
+          <div class="w-3 h-3 bg-[#c5a059] rounded-full animate-bounce delay-300"></div>
+        </div>
+      </div>
+    </div>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>

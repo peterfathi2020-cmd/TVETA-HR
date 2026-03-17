@@ -76,6 +76,10 @@ export interface WorkUnit {
   parent_unit_id?: number;
   manager_national_id?: string; // Foreign Key to Employee (Manager)
   
+  // New: Location coordinates
+  latitude?: number;
+  longitude?: number;
+
   // Backwards compatibility / Auth service fields
   manager_id?: string | null;
   name?: string;
@@ -91,9 +95,11 @@ export interface EmployeeDocument {
   id: string;
   name: string;
   type: string; // MIME type (application/pdf, image/jpeg, etc.)
-  content: string; // Base64 string
+  url: string; // Firebase Storage URL
+  storagePath?: string; // Path in storage to allow deletion
   size: number;
   uploadDate: string;
+  content?: string; // Legacy Base64 support (optional now)
 }
 
 export interface Qualification {
@@ -119,7 +125,7 @@ export interface Employee {
   birth_date: string;
   phone_number: string;
   email: string;
-  profile_picture?: string; // URL or Base64 string
+  profile_picture?: string; // URL
   
   // New Personal Data
   nationality?: Nationality | string;
@@ -234,4 +240,31 @@ export interface TrainingCourse {
   status: TrainingStatus;
   enrolled: number;
   capacity: number;
+}
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  userId: string;
+  userEmail: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT';
+  entityType: 'EMPLOYEE' | 'WORK_UNIT' | 'USER' | 'APPRAISAL';
+  entityId: string;
+  changes?: {
+    field: string;
+    oldValue: any;
+    newValue: any;
+  }[];
+  details?: string;
+}
+
+export interface Appraisal {
+  id: string;
+  employeeId: string;
+  managerId: string;
+  year: number;
+  rating: number; // 1-5 or 1-100
+  comments: string;
+  date: string;
+  status: 'Draft' | 'Submitted' | 'Approved';
 }
