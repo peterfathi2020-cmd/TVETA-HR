@@ -42,6 +42,7 @@ export interface EmployeeDetails {
     nationality?: Nationality | string;
     religion?: Religion | string;
     marital_status?: MaritalStatus | string;
+    education_type?: EducationType | string;
     group_type?: string;
     work_status?: string;
     actual_appointment_date?: string;
@@ -66,6 +67,13 @@ export enum MaritalStatus {
   MAR = 'MAR',
   DIV = 'DIV',
   WID = 'WID',
+}
+
+export enum EducationType {
+  GENERAL = 'GENERAL',
+  TECHNICAL = 'TECHNICAL',
+  AL_AZHAR = 'AL_AZHAR',
+  SPECIAL = 'SPECIAL',
 }
 
 export interface WorkUnit {
@@ -131,6 +139,7 @@ export interface Employee {
   nationality?: Nationality | string;
   religion?: Religion | string;
   marital_status?: MaritalStatus | string;
+  education_type?: EducationType | string;
 
   job_title: string;
   
@@ -202,6 +211,13 @@ export const MaritalStatusLabels: Record<MaritalStatus, string> = {
   [MaritalStatus.MAR]: 'متزوج',
   [MaritalStatus.DIV]: 'مطلق',
   [MaritalStatus.WID]: 'أرمل',
+};
+
+export const EducationTypeLabels: Record<EducationType, string> = {
+  [EducationType.GENERAL]: 'عام',
+  [EducationType.TECHNICAL]: 'فني',
+  [EducationType.AL_AZHAR]: 'أزهري',
+  [EducationType.SPECIAL]: 'تربية خاصة',
 };
 
 // AI & Training Related Types

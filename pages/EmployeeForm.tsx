@@ -6,7 +6,7 @@ import { getManagedUnit } from '../services/authService';
 import { EmployeeService, WorkUnitService, validateAcademicEmail, StorageService } from '../services/api';
 import { 
   Employee, EmployeeType, EmployeeTypeLabels, WorkUnit, UserRole, 
-  Nationality, NationalityLabels, Religion, ReligionLabels, MaritalStatus, MaritalStatusLabels, WorkUnitType, WorkUnitTypeLabels, EmployeeDocument, TrainingRecord, Qualification 
+  Nationality, NationalityLabels, Religion, ReligionLabels, MaritalStatus, MaritalStatusLabels, EducationType, EducationTypeLabels, WorkUnitType, WorkUnitTypeLabels, EmployeeDocument, TrainingRecord, Qualification 
 } from '../types';
 import { useAuth } from '../context/authContext';
 import { EGYPT_GOVERNORATES } from '../constants';
@@ -448,6 +448,7 @@ const EmployeeForm: React.FC = () => {
               nationality: formData.nationality,
               religion: formData.religion,
               marital_status: formData.marital_status,
+              education_type: formData.education_type,
               group_type: formData.group_type,
               work_start_date: formData.work_start_date,
               actual_appointment_date: formData.actual_appointment_date,
@@ -667,6 +668,12 @@ const EmployeeForm: React.FC = () => {
                     <InputGroup label="الحالة الاجتماعية" icon={User}>
                       <StyledSelect name="marital_status" value={formData.marital_status} onChange={handleChange} disabled={isFieldDisabled('marital_status')}>
                         {Object.entries(MaritalStatusLabels).map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
+                      </StyledSelect>
+                    </InputGroup>
+                    <InputGroup label="نوعية التعليم" icon={BookOpen}>
+                      <StyledSelect name="education_type" value={formData.education_type || ''} onChange={handleChange} disabled={isFieldDisabled('education_type')}>
+                        <option value="">اختر نوعية التعليم</option>
+                        {Object.entries(EducationTypeLabels).map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
                       </StyledSelect>
                     </InputGroup>
                   </div>

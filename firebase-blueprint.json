@@ -15,7 +15,8 @@
         "phone_number": { "type": "string" },
         "employment_date": { "type": "string" },
         "work_place_id": { "type": "number" },
-        "employee_type": { "type": "string" }
+        "employee_type": { "type": "string" },
+        "education_type": { "type": "string" }
       },
       "required": ["national_id", "full_name_ar", "email", "role"]
     },

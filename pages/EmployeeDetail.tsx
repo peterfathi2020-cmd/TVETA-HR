@@ -11,7 +11,7 @@ import { EmployeeService, WorkUnitService, canEditEmployee } from '../services/a
 import { analyzeEmployeeProfileComprehensive } from '../services/geminiService';
 import { 
   Employee, EmployeeType, EmployeeTypeLabels, WorkUnit, 
-  NationalityLabels, ReligionLabels, MaritalStatusLabels, UserRole 
+  NationalityLabels, ReligionLabels, MaritalStatusLabels, EducationTypeLabels, UserRole 
 } from '../types';
 import { useAuth } from '../context/authContext';
 import { getManagedUnit } from '../services/authService';
@@ -285,14 +285,18 @@ const EmployeeDetail: React.FC = () => {
                   <tr>
                       <td className="print-label">الحالة الاجتماعية:</td>
                       <td>{employee.marital_status ? MaritalStatusLabels[employee.marital_status] : '-'}</td>
-                      <td className="print-label">الجنسية:</td>
-                      <td>{employee.nationality ? NationalityLabels[employee.nationality] : '-'}</td>
+                      <td className="print-label">نوعية التعليم:</td>
+                      <td>{employee.education_type ? EducationTypeLabels[employee.education_type] : '-'}</td>
                   </tr>
                   <tr>
+                      <td className="print-label">الجنسية:</td>
+                      <td>{employee.nationality ? NationalityLabels[employee.nationality] : '-'}</td>
                       <td className="print-label">رقم الهاتف:</td>
                       <td className="font-mono">{employee.phone_number || '-'}</td>
+                  </tr>
+                  <tr>
                       <td className="print-label">البريد الأكاديمي:</td>
-                      <td className="font-mono text-xs">{employee.email || '-'}</td>
+                      <td className="font-mono text-xs" colSpan={3}>{employee.email || '-'}</td>
                   </tr>
               </tbody>
           </table>
@@ -659,6 +663,10 @@ const EmployeeDetail: React.FC = () => {
                     <div className="flex flex-col gap-1">
                         <span className="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase">الحالة الاجتماعية</span>
                         <span className="text-gray-800 dark:text-white font-medium text-sm">{employee.marital_status ? MaritalStatusLabels[employee.marital_status] : '-'}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <span className="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase">نوعية التعليم</span>
+                        <span className="text-gray-800 dark:text-white font-medium text-sm">{employee.education_type ? EducationTypeLabels[employee.education_type] : '-'}</span>
                     </div>
                     <div className="flex flex-col gap-1">
                         <span className="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase">تاريخ الميلاد</span>

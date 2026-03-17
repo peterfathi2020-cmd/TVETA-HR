@@ -16,7 +16,7 @@ import { EmployeeService, WorkUnitService, DatabaseService, SeedService } from '
 import { getManagedUnit } from '../services/authService';
 import { 
   Employee, WorkUnit, UserRole, EmployeeType, EmployeeTypeLabels, 
-  Religion, ReligionLabels, MaritalStatus, MaritalStatusLabels, Nationality 
+  Religion, ReligionLabels, MaritalStatus, MaritalStatusLabels, EducationType, EducationTypeLabels, Nationality 
 } from '../types';
 import { ACADEMY_LOGO_URL } from '../constants';
 import { ConfirmationModal } from '../components/ConfirmationModal';
@@ -53,6 +53,7 @@ const EXCEL_SCHEMA = {
     STATUS: 'الموقف من العمل',
     RELIGION: 'الديانة',
     MARITAL: 'الحالة الاجتماعية',
+    EDUCATION_TYPE: 'نوعية التعليم',
     DEGREE: 'المؤهل (التعيين)',
     SPECIALIZATION: 'التخصص',
     STAGE: 'المرحلة',
@@ -455,6 +456,7 @@ const EmployeeList: React.FC = () => {
                 [EXCEL_SCHEMA.STATUS]: emp.work_status || '-',
                 [EXCEL_SCHEMA.RELIGION]: emp.religion ? ReligionLabels[emp.religion as Religion] : '-',
                 [EXCEL_SCHEMA.MARITAL]: emp.marital_status ? MaritalStatusLabels[emp.marital_status as MaritalStatus] : '-',
+                [EXCEL_SCHEMA.EDUCATION_TYPE]: emp.education_type ? EducationTypeLabels[emp.education_type as EducationType] : '-',
                 [EXCEL_SCHEMA.DEGREE]: emp.qualifications?.[0]?.degree || '-',
                 [EXCEL_SCHEMA.SPECIALIZATION]: emp.teacher_details?.specialization || '-',
                 [EXCEL_SCHEMA.STAGE]: emp.teacher_details?.educational_stage || '-',
