@@ -99,16 +99,11 @@ service cloud.firestore {
 
     // Users collection
     match /users/{email} {
-      allow read: if isSignedIn() && (request.auth.token.email == email || isAdmin() || isManager());
-      allow create: if isSignedIn() && (
-        isAdmin() ||
-        (request.auth.token.email == email && incoming().get('role', 'EMPLOYEE') == 'EMPLOYEE') ||
-        (isManager() && incoming().get('role', '') == 'EMPLOYEE')
-      );
+      allow read: if isSignedIn() && (request.auth.token.email == email || isAdmin());
+      allow create: if isSignedIn() && (request.auth.token.email == email || isAdmin());
       allow update: if isSignedIn() && (
-        isAdmin() ||
         (request.auth.token.email == email && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'governorate'])) ||
-        (isManager() && existing().get('role', '') == 'EMPLOYEE' && incoming().get('role', '') == 'EMPLOYEE' && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'governorate']))
+        isAdmin()
       );
     }
 
@@ -122,28 +117,12 @@ service cloud.firestore {
         resource.data.national_id == getUserData().national_id
       );
       
-      allow create: if isAdmin() || (
-        isManager() && 
-        isValidEmployee(incoming()) && 
-        incoming().governorate == getUserGovernorate() &&
-        incoming().get('role', '') != 'Admin' &&
-        incoming().get('role', '') != 'Administrative' &&
-        incoming().get('role', '') != 'ACAD_ADMIN' &&
-        incoming().get('role', '') != 'EDU_MANAGER'
-      );
+      allow create: if isAdmin() || (isManager() && isValidEmployee(incoming()) && incoming().governorate == getUserGovernorate());
       
       allow update: if isAdmin() || (
         isGovernorateManager(existing().governorate) && 
         isValidEmployee(incoming()) &&
-        incoming().governorate == existing().governorate && // Manager cannot change governorate
-        existing().get('role', '') != 'Admin' &&
-        existing().get('role', '') != 'Administrative' &&
-        existing().get('role', '') != 'ACAD_ADMIN' &&
-        existing().get('role', '') != 'EDU_MANAGER' &&
-        incoming().get('role', '') != 'Admin' &&
-        incoming().get('role', '') != 'Administrative' &&
-        incoming().get('role', '') != 'ACAD_ADMIN' &&
-        incoming().get('role', '') != 'EDU_MANAGER'
+        incoming().governorate == existing().governorate // Manager cannot change governorate
       );
       
       allow delete: if isAdmin();
@@ -164,17 +143,6 @@ service cloud.firestore {
       );
       
       allow create, update: if isGovernorateManager(get(/databases/$(database)/documents/employees/$(incoming().employeeId)).data.governorate);
-      allow delete: if isAdmin();
-    }
-
-    // Update Requests
-    match /update_requests/{requestId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (
-        resource.data.employeeId == getUserData().national_id || 
-        isManager()
-      );
       allow delete: if isAdmin();
     }
 

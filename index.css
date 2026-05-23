@@ -32,8 +32,8 @@ body {
 .markdown-body th { @apply bg-slate-50 dark:bg-slate-900/50; }
 
 /* Global transition for smooth theme switching */
-body, div, nav, aside, header, footer, button, input, select, textarea {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+body, nav, aside, header, footer, button, input, select, textarea {
+  transition-property: background-color, border-color, color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }

@@ -116,6 +116,16 @@ export interface Qualification {
   institution: string; // University name
   year: string;
   grade?: string;
+  accredited_by_academy?: boolean; // الاعتماد من الاكاديميه
+  accreditation_type?: string; // نوع الاعتماد
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  type: 'Award' | 'Research' | 'Conference' | 'Other';
+  date: string;
+  description: string;
 }
 
 export interface TrainingRecord {
@@ -131,9 +141,13 @@ export interface Employee {
   employee_code?: string; // HR Code
   full_name_ar: string;
   birth_date: string;
+  birth_place?: string; // محل الميلاد
+  gender?: 'ذكر' | 'أنثى' | string; // النوع
   phone_number: string;
-  email: string;
+  email: string; // Personal Email
+  academic_email?: string; // البريد الأكاديمي
   profile_picture?: string; // URL
+  address?: string; // العنوان الحالي
   
   // New Personal Data
   nationality?: Nationality | string;
@@ -143,9 +157,17 @@ export interface Employee {
 
   job_title: string;
   
+  // Work Location Details
+  directorate?: string; // المديرية
+  educational_administration?: string; // الإدارة التعليمية
+  educational_stage?: string; // المرحلة التعليمية
+  
   // New Job Details
   group_type?: string; // المجموعة النوعية
+  financial_grade?: string; // الدرجة المالية
   work_status?: string; // الموقف من العمل
+  specialization?: string; // التخصص
+  teaching_subject?: string; // مادة التدريس
 
   // Dates
   employment_date: string; // تاريخ التعيين
@@ -155,17 +177,18 @@ export interface Employee {
   last_promotion_date?: string; // تاريخ آخر ترقية
   
   work_place_id: number;
+  governorate?: string; // Cache governorate here for security rules and easy filtering
   employee_type: EmployeeType;
+  role?: string; // Admin | Administrative | Trainer (System permissions)
   teacher_details?: TeacherDetails; // OneToOne relation
   
   documents?: EmployeeDocument[]; // Array of attached documents
   qualifications?: Qualification[]; // New: Academic Qualifications
   training_history?: TrainingRecord[]; // New: Training History
+  achievements?: Achievement[]; // New: E-Portfolio Achievements
 
   // Backwards compatibility / Auth service fields
-  academic_email?: string;
   password_hash?: string;
-  role?: Role | string;
   details?: EmployeeDetails;
 }
 
@@ -177,6 +200,7 @@ export interface User {
   role: UserRole;
   employee_national_id?: string; // Link to Employee
   work_unit_id?: number; // For Edu Managers, restricts them to this unit
+  governorate?: string; // The governorate this user can manage (derived from work unit)
   name?: string; // Helper for UI
 }
 
@@ -274,9 +298,23 @@ export interface AuditLog {
   details?: string;
 }
 
+export interface UpdateDataRequest {
+  id?: string;
+  employeeId: string;
+  employeeName: string;
+  requestType: 'PROFILE_UPDATE' | 'CERTIFICATE_UPLOAD';
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  requestedChanges: Record<string, any>; // maps field name to new value
+  createdAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  managerNotes?: string;
+}
+
 export interface Appraisal {
   id: string;
   employeeId: string;
+  governorate?: string;
   managerId: string;
   year: number;
   rating: number; // 1-5 or 1-100

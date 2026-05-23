@@ -1,82 +1,83 @@
 {
   "entities": {
-    "Employee": {
-      "title": "Employee",
-      "description": "Internal employee record",
-      "type": "object",
-      "properties": {
-        "national_id": { "type": "string" },
-        "full_name_ar": { "type": "string" },
-        "email": { "type": "string" },
-        "academic_email": { "type": "string" },
-        "role": { "type": "string" },
-        "job_title": { "type": "string" },
-        "birth_date": { "type": "string" },
-        "phone_number": { "type": "string" },
-        "employment_date": { "type": "string" },
-        "work_place_id": { "type": "number" },
-        "employee_type": { "type": "string" },
-        "education_type": { "type": "string" }
-      },
-      "required": ["national_id", "full_name_ar", "email", "role"]
-    },
-    "WorkUnit": {
-      "title": "WorkUnit",
-      "description": "Educational unit (School, Dept, etc.)",
-      "type": "object",
-      "properties": {
-        "id": { "type": "number" },
-        "name": { "type": "string" },
-        "type": { "type": "string" },
-        "governorate": { "type": "string" },
-        "manager_id": { "type": "string" }
-      },
-      "required": ["id", "name", "type", "governorate"]
-    },
     "User": {
-      "title": "User",
-      "description": "System user profile for RBAC",
+      "title": "User Profile",
+      "description": "User authentication and authorization data",
       "type": "object",
       "properties": {
         "email": { "type": "string" },
-        "role": { "type": "string" },
-        "national_id": { "type": "string" }
+        "role": { "type": "string", "enum": ["ACAD_ADMIN", "EDU_MANAGER", "EMPLOYEE"] },
+        "national_id": { "type": "string" },
+        "work_unit_id": { "type": "number" },
+        "governorate": { "type": "string" },
+        "name": { "type": "string" },
+        "is_staff": { "type": "boolean" },
+        "is_active": { "type": "boolean" }
       },
       "required": ["email", "role"]
     },
-    "AuditLog": {
-      "title": "AuditLog",
-      "description": "System audit log for tracking changes",
+    "Employee": {
+      "title": "Employee",
+      "description": "Primary employee record",
       "type": "object",
       "properties": {
-        "timestamp": { "type": "string" },
-        "userId": { "type": "string" },
-        "userEmail": { "type": "string" },
-        "action": { "type": "string" },
-        "entityType": { "type": "string" },
-        "entityId": { "type": "string" }
+        "national_id": { "type": "string" },
+        "employee_code": { "type": "string" },
+        "full_name_ar": { "type": "string" },
+        "phone_number": { "type": "string" },
+        "email": { "type": "string" },
+        "job_title": { "type": "string" },
+        "work_place_id": { "type": "number" },
+        "governorate": { "type": "string" },
+        "employee_type": { "type": "string", "enum": ["TEACHER", "ADMIN", "TRAINER", "TECHNICIAN"] },
+        "employment_date": { "type": "string" }
       },
-      "required": ["timestamp", "userId", "action", "entityType", "entityId"]
+      "required": ["national_id", "full_name_ar", "email", "work_place_id", "employee_type"]
+    },
+    "WorkUnit": {
+      "title": "Work Unit",
+      "description": "A school, department, or directorate",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "name_ar": { "type": "string" },
+        "unit_type": { "type": "string", "enum": ["SCHOOL", "EDU_DEPT", "DIRECTORATE", "OTHER"] },
+        "governorate": { "type": "string" },
+        "manager_national_id": { "type": "string" }
+      },
+      "required": ["id", "name_ar", "unit_type", "governorate"]
     },
     "Appraisal": {
       "title": "Appraisal",
-      "description": "Employee performance appraisal",
+      "description": "Employee performance evaluation",
       "type": "object",
       "properties": {
+        "id": { "type": "string" },
         "employeeId": { "type": "string" },
         "managerId": { "type": "string" },
         "year": { "type": "number" },
         "rating": { "type": "number" },
-        "status": { "type": "string" }
+        "status": { "type": "string", "enum": ["Draft", "Submitted", "Approved"] }
       },
-      "required": ["employeeId", "managerId", "year", "rating", "status"]
+      "required": ["id", "employeeId", "managerId", "year", "rating", "status"]
     }
   },
   "firestore": {
-    "/employees": { "schema": "Employee", "description": "Collection of all employees" },
-    "/work_units": { "schema": "WorkUnit", "description": "Collection of all work units" },
-    "/users": { "schema": "User", "description": "Collection of system users for RBAC" },
-    "/audit_logs": { "schema": "AuditLog", "description": "System audit logs" },
-    "/appraisals": { "schema": "Appraisal", "description": "Employee appraisals" }
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles by email"
+    },
+    "/employees/{employeeId}": {
+      "schema": "Employee",
+      "description": "Employee records by national ID"
+    },
+    "/work_units/{unitId}": {
+      "schema": "WorkUnit",
+      "description": "Work units"
+    },
+    "/appraisals/{appraisalId}": {
+      "schema": "Appraisal",
+      "description": "Performance evaluations"
+    }
   }
 }
