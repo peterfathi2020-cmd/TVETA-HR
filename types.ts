@@ -302,6 +302,7 @@ export interface UpdateDataRequest {
   id?: string;
   employeeId: string;
   employeeName: string;
+  employeeGovernorate?: string;
   requestType: 'PROFILE_UPDATE' | 'CERTIFICATE_UPLOAD';
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   requestedChanges: Record<string, any>; // maps field name to new value

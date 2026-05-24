@@ -8,6 +8,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { RoleProtectedRoute } from './hooks/RoleProtectedRoute';
 import { Loader2 } from 'lucide-react';
 import { UserRole } from './types';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard').then(module => ({ default: module.Dashboard })));
@@ -30,8 +31,6 @@ const PageLoader = () => (
     </div>
   </div>
 );
-
-import ErrorBoundary from './components/ErrorBoundary';
 
 import { Layout } from './components/Layout';
 import { PWAInstallBanner } from './components/PWAInstallBanner';

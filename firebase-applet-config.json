@@ -1,9 +1,10 @@
 {
+  "projectId": "tveta-hr2026",
+  "appId": "1:394081866982:web:e857d9c6053cbc05e39727",
   "apiKey": "AIzaSyCbsqcdqbxNKmYFchqbwNi5AKU5U6Dqj4M",
   "authDomain": "tveta-hr2026.firebaseapp.com",
-  "projectId": "tveta-hr2026",
+  "firestoreDatabaseId": "(default)",
   "storageBucket": "tveta-hr2026.firebasestorage.app",
   "messagingSenderId": "394081866982",
-  "appId": "1:394081866982:web:e857d9c6053cbc05e39727",
   "measurementId": "G-7QYZHP8Z8K"
 }

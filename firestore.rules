@@ -3,13 +3,6 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // ===============================================================
-    // DEFAULT DENY
-    // ===============================================================
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // ===============================================================
     // HELPERS
     // ===============================================================
     
@@ -25,26 +18,15 @@ service cloud.firestore {
       return resource.data;
     }
 
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    function isMasterAdmin() {
+      return isSignedIn() && request.auth.token.email != null && (
+        request.auth.uid in ["dL6527fx8fdiKXmVDPJVZ9UyCJg1", "cecjjnpTEeSxzv3BGpAnCkzgZlJ3", "0orr3a8eNwV4RSZz4IBEyxVSfPl2", "TBTTLtt9Tng0ct22gTtiDleYjWD2"] ||
+        (request.auth.token.email in ["peterfathi2020@gmail.com", "admin.sys@academy.edu.eg", "tveta.hr.2026@gmail.com", "tveta2026@gmail.com"])
+      );
     }
 
-    function isMasterAdmin() {
-      return isSignedIn() && (
-        request.auth.uid == "dL6527fx8fdiKXmVDPJVZ9UyCJg1" ||
-        request.auth.uid == "cecjjnpTEeSxzv3BGpAnCkzgZlJ3" ||
-        request.auth.uid == "0orr3a8eNwV4RSZz4IBEyxVSfPl2" ||
-        request.auth.uid == "TBTTLtt9Tng0ct22gTtiDleYjWD2" ||
-        (
-          "email" in request.auth.token &&
-          (
-            request.auth.token.email == "peterfathi2020@gmail.com" ||
-            request.auth.token.email == "admin.sys@academy.edu.eg" ||
-            request.auth.token.email == "tveta.hr.2026@gmail.com" ||
-            request.auth.token.email == "tveta2026@gmail.com"
-          )
-        )
-      );
+    function hasUserData() {
+      return isSignedIn() && request.auth.token.email != null && exists(/databases/$(database)/documents/users/$(request.auth.token.email));
     }
 
     function getUserData() {
@@ -52,44 +34,27 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isMasterAdmin() || (
-        isSignedIn() && 
-        "email" in request.auth.token &&
-        exists(/databases/$(database)/documents/users/$(request.auth.token.email)) &&
-        getUserData().role == 'ACAD_ADMIN'
-      );
+      return isMasterAdmin() || (hasUserData() && getUserData().get('role', '') == 'ACAD_ADMIN');
     }
 
     function isManager() {
-      return isAdmin() || (
-        isSignedIn() && 
-        "email" in request.auth.token &&
-        exists(/databases/$(database)/documents/users/$(request.auth.token.email)) &&
-        getUserData().role == 'EDU_MANAGER'
-      );
+      return isAdmin() || (hasUserData() && getUserData().get('role', '') == 'EDU_MANAGER');
     }
 
     function getUserGovernorate() {
-       return exists(/databases/$(database)/documents/users/$(request.auth.token.email)) ? 
-              getUserData().governorate : null;
+       return hasUserData() ? getUserData().get('governorate', null) : null;
     }
 
     function isGovernorateManager(gov) {
-      return isMasterAdmin() || (
-        isManager() && getUserGovernorate() == gov
-      );
+      return isMasterAdmin() || (isManager() && getUserGovernorate() == gov);
     }
-
-    // ===============================================================
-    // VALIDATION HELPERS
-    // ===============================================================
 
     function isValidEmployee(data) {
       return data.keys().hasAll(['national_id', 'full_name_ar', 'email', 'work_place_id', 'employee_type']) &&
              data.national_id is string && data.national_id.size() == 14 &&
-             data.full_name_ar is string && data.full_name_ar.size() >= 3 && data.full_name_ar.size() <= 200 &&
-             data.email is string && data.email.size() <= 100 &&
-             data.work_place_id is int &&
+             data.full_name_ar is string && data.full_name_ar.size() >= 3 &&
+             data.email is string &&
+             (data.work_place_id is int || data.work_place_id is float || data.work_place_id is number) &&
              data.employee_type in ['TEACHER', 'ADMIN', 'TRAINER', 'TECHNICIAN'];
     }
 
@@ -97,88 +62,73 @@ service cloud.firestore {
     // RULES
     // ===============================================================
 
+    // Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
     // Users collection
     match /users/{email} {
       allow read: if isSignedIn() && (request.auth.token.email == email || isAdmin() || isManager());
       allow create: if isSignedIn() && (
         isAdmin() ||
-        (request.auth.token.email == email && incoming().get('role', 'EMPLOYEE') == 'EMPLOYEE') ||
+        (request.auth.token.email == email) ||
         (isManager() && incoming().get('role', '') == 'EMPLOYEE')
       );
       allow update: if isSignedIn() && (
         isAdmin() ||
-        (request.auth.token.email == email && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'governorate'])) ||
-        (isManager() && existing().get('role', '') == 'EMPLOYEE' && incoming().get('role', '') == 'EMPLOYEE' && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'governorate']))
+        (request.auth.token.email == email && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'governorate']))
       );
     }
 
     // Employees collection
     match /employees/{employeeId} {
-      allow read: if isSignedIn() && (
-        isMasterAdmin() || 
-        isAdmin() || 
-        isGovernorateManager(resource.data.governorate) || 
-        resource.data.email == request.auth.token.email ||
-        resource.data.national_id == getUserData().national_id
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (
+        isMasterAdmin() ||
+        isAdmin() ||
+        (request.auth.token.email != null && resource.data.get('email', '') == request.auth.token.email) ||
+        (request.auth.token.email != null && resource.data.get('academic_email', '') == request.auth.token.email) ||
+        isGovernorateManager(resource.data.get('governorate', null))
       );
       
       allow create: if isAdmin() || (
-        isManager() && 
-        isValidEmployee(incoming()) && 
-        incoming().governorate == getUserGovernorate() &&
-        incoming().get('role', '') != 'Admin' &&
-        incoming().get('role', '') != 'Administrative' &&
-        incoming().get('role', '') != 'ACAD_ADMIN' &&
-        incoming().get('role', '') != 'EDU_MANAGER'
+        isManager() && isValidEmployee(incoming()) && incoming().get('governorate', null) == getUserGovernorate()
+      ) || (
+        isSignedIn() &&
+        incoming().get('email', '') == request.auth.token.email &&
+        incoming().get('national_id', '') == employeeId
       );
       
       allow update: if isAdmin() || (
-        isGovernorateManager(existing().governorate) && 
+        isGovernorateManager(existing().get('governorate', null)) && 
         isValidEmployee(incoming()) &&
-        incoming().governorate == existing().governorate && // Manager cannot change governorate
-        existing().get('role', '') != 'Admin' &&
-        existing().get('role', '') != 'Administrative' &&
-        existing().get('role', '') != 'ACAD_ADMIN' &&
-        existing().get('role', '') != 'EDU_MANAGER' &&
-        incoming().get('role', '') != 'Admin' &&
-        incoming().get('role', '') != 'Administrative' &&
-        incoming().get('role', '') != 'ACAD_ADMIN' &&
-        incoming().get('role', '') != 'EDU_MANAGER'
+        incoming().get('governorate', null) == existing().get('governorate', null)
+      ) || (
+        isSignedIn() &&
+        incoming().get('email', '') == request.auth.token.email &&
+        incoming().get('national_id', '') == employeeId &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['email', 'phone_number', 'details', 'academic_email', 'governorate', 'work_place_id'])
       );
       
       allow delete: if isAdmin();
     }
 
-    // Work Units collection
     match /work_units/{unitId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
 
-    // Appraisals collection
     match /appraisals/{appraisalId} {
-      allow read: if isSignedIn() && (
-        isAdmin() || 
-        isGovernorateManager(get(/databases/$(database)/documents/employees/$(resource.data.employeeId)).data.governorate) ||
-        resource.data.employeeId == getUserData().national_id
-      );
-      
-      allow create, update: if isGovernorateManager(get(/databases/$(database)/documents/employees/$(incoming().employeeId)).data.governorate);
-      allow delete: if isAdmin();
+      allow read: if isSignedIn();
+      allow write: if isManager();
     }
 
-    // Update Requests
     match /update_requests/{requestId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (
-        resource.data.employeeId == getUserData().national_id || 
-        isManager()
-      );
-      allow delete: if isAdmin();
+      allow write: if isSignedIn();
     }
 
-    // Audit Logs
     match /audit_logs/{logId} {
       allow read: if isAdmin();
       allow create: if isSignedIn();
